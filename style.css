@@ -1,0 +1,400 @@
+:root {
+    --fire: #ee4628;
+    --water: #289fee;
+    --grass: #1bb607;
+}
+
+* {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+}
+
+body {
+    background: #a7a7a7;
+    height: 100%;
+}
+
+#title {
+    text-align: center;
+    font-size: 36px;
+    letter-spacing: 1.3px;
+    color: white;
+    text-shadow: 2px 2px 0px #00000030;
+}
+
+#board {
+    margin: auto;
+    width: 80%;
+    height: 80vh;
+    border: 1px solid #fefefe;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 0;
+    margin-top: 12px;
+    margin-bottom: -8px;
+    box-shadow: 0px 0px 5px 2px #00000030;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+}
+
+#enemies {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: center;
+    gap: 5px;
+    margin: 20px auto;
+}
+
+.card {
+    width: 80px;
+    height: 100px;
+    border: 1px solid #33333360;
+    border-radius: 4px;
+    transition: all .2s ease-in-out;
+}
+
+.card:hover {
+    cursor: pointer;
+    border: 1px solid #000;
+}
+
+.enemy {
+    background: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, .5)), url("/assets/sword.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: .3;
+    transition: all .2s;
+}
+
+.enemy:hover {
+    background: linear-gradient(rgba(255, 254, 192, 0.5), rgba(255, 254, 192, 0.5)), url("/assets/sword.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: .3;
+    cursor: pointer;
+}
+
+#dock {
+    margin: 7.5% auto 0 auto;
+    height: 150px;
+    width: 80%;
+    bottom: 0;
+    border: 1px solid #fefefe;
+    border-bottom: 0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    display: grid;
+    grid-template-columns: 40% 12% 12% 12% 12% 12%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: linear-gradient(#fefefe30, #8a8a8a75)
+}
+
+.dock-interface {
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #fefefe40;
+    display: flex;
+    flex-wrap: wrap;
+    flex-flow: column;
+}
+
+.dock-interface:hover {
+    cursor: pointer;
+}
+
+#dock:nth-child(4) {
+    border-right: 0px !important;
+}
+
+#ipotions {
+    display: inherit;
+    text-align: center;
+}
+
+.interface-bg {
+    width: 90%;
+    height: 90%;
+    margin: auto !important;
+    background-size: 80% !important;
+    /* opacity: .4 !important; */
+    background-position: 15px !important;
+    background-repeat: no-repeat !important;
+    /* transform: translate(-35%, -21%) !important; */
+    /* margin-top: 35% !important; */
+    /* margin-left: 35% !important; */
+    transition: all .2s ease-in-out;
+}
+
+.interface-bg>.action-card {
+    opacity: .7 !important;
+}
+
+#iattack {
+    background: url("assets/axe.png");
+}
+
+#iface {
+    background: url("assets/helmets.png");
+}
+
+#ishield {
+    background: url("assets/shield.png");
+}
+
+#iinventory {
+    background: url("assets/bag.png");
+}
+
+.interface-bg:hover {
+    filter: saturate(2.5);
+}
+
+#inventory {
+    display: grid;
+    opacity: 1;
+    position: absolute;
+    width: 250px;
+    height: 320px;
+    grid-template-columns: repeat(4, 30%);
+    grid-template-rows: repeat(3, 30%);
+    gap: 3px;
+    background: transparent;
+    bottom: 180px;
+    right: 15vh;
+    transition: all .3s ease-in-out;
+}
+
+.inventory-slot {
+    width: 100%;
+    height: 100%;
+    border: 1px #333;
+    background: #fefefe90;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    box-shadow: 2px 2px 5px -2px #33333350;
+}
+
+.inventory-slot>.action-card {
+    height: 95%;
+    width: 95%;
+}
+
+.inventory-slot:hover {
+    background: rgba(255, 254, 192, 0.5);
+    cursor: pointer;
+}
+
+#details {
+    display: flex;
+    margin: auto;
+    width: 80%;
+    height: 40px;
+    align-items: center;
+    justify-content: left;
+}
+
+#details>span {
+    padding-left: 5px;
+    padding-right: 20px;
+}
+
+#game-stats {
+    position: absolute;
+    width: 150px;
+    height: 100px;
+    background: #fde8b930;
+    display: grid;
+    padding: 15px;
+    border-top-left-radius: 8px;
+    grid-template-columns: auto auto;
+}
+
+#hp-bar {
+    width: 100%;
+    height: 20px;
+    background: var(--fire);
+    text-align: center;
+    grid-column: 1/-1;
+}
+
+#hp-inner-bar {
+    height: 100%;
+    background: var(--grass);
+    margin-top: -19px;
+}
+
+#cards {
+    height: 120px;
+    border: 1px dashed #fefefe;
+    width: 30vw;
+    display: grid;
+    background: #c0882020;
+    grid-template-columns: 120px auto auto auto;
+    column-gap: 10px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 35%;
+    left: 1%;
+}
+
+.deck-txt {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: .5;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 0px #fff;
+}
+
+.card-container {
+    background: #c5c5c590;
+    border-radius: 5px;
+}
+
+.dragged-card {
+    border: 2px dashed sandybrown;
+    margin-left: -2px;
+    margin-top: -2px;
+}
+
+.btn {
+    display: block;
+    height: 20px;
+    min-width: 20px;
+    padding: 3px;
+    margin: 3px;
+    border-radius: 3px;
+    text-align: center;
+    background: #fefefe40;
+    color: #333;
+    border: 1px solid #33333340;
+    transition: all .3s;
+}
+
+.btn:hover {
+    cursor: pointer;
+    background: #fefefe80;
+}
+
+.btn-red {
+    background: #e6434340;
+    color: rgb(255, 255, 255);
+    border: 1px solid #d6000040;
+}
+
+.btn-red:hover {
+    background: #e6434380;
+}
+
+.btn[disabled='true'] {
+    cursor: not-allowed !important;
+    color: #33333360;
+}
+
+#potions {
+    display: flex;
+}
+
+.potion-holder {
+    padding: 3px;
+    margin: 3px;
+}
+
+#brewed-potion {
+    background: linear-gradient(#fefefe20, #ff440005);
+    border-color: #e6434360;
+}
+
+#brewed-potion:hover {
+    border-color: #e64343;
+}
+
+.card-drop-zone {
+    border-style: dashed !important;
+}
+
+.action-card {
+    width: 102%;
+    height: 102%;
+    border-radius: inherit;
+}
+
+.action-card>div {
+    display: grid;
+    grid-auto-columns: auto;
+    gap: 5px;
+    border-radius: inherit;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    flex-wrap: wrap;
+    font-size: 10px;
+}
+
+.enemy-card {
+    background: #000;
+    color: white;
+}
+
+.potion-card {
+    background: #d8a366;
+    animation: glowAnimation .5s linear;
+}
+
+@keyframes glowAnimation {
+    0% {
+        box-shadow: 0 0 0 #fbff08;
+        background: #fefefe !important;
+    }
+    1% {
+        box-shadow: 0 0 15px 0px #fbff08;
+    }
+    50% {
+        box-shadow: 0 0 15px 10px #fbff08;
+    }
+    99% {
+        box-shadow: 0 0 15px 0px #fbff08;
+    }
+    100% {
+        box-shadow: 0 0 0 #fbff08;
+    }
+}
+
+.element-card {
+    background: #d86666;
+}
+
+.shield-card {
+    background: #0c67f0;
+    /* color: white; */
+}
+
+.weapon-card {
+    background: #c0c0c0;
+}
+
+.inner-card-header {
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 3px;
+}
+
+.inner-card-symbol {
+    font-size: 24px;
+    align-self: center;
+}
+
+.potion-card>.inner-card-symbol {
+    font-size: 16px !important;
+}
