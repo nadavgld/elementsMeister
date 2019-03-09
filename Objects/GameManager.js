@@ -1,6 +1,6 @@
 import Element from './Element.js';
 import Player from './Player.js';
-import { ItemType } from './Enum.js';
+import { ItemType, ElementType } from './Enum.js';
 import Enemy from './Enemy.js';
 import { ElementCard, ShieldCard, WeaponCard, EnemyCard } from './Card.js';
 import Weapon from './Weapon.js';
@@ -14,13 +14,19 @@ class GameManager {
         this.isGameOver = false;
         this.showInventory = true;
         this.inventory = new Inventory();
-        this.enemies = new Array(9)
+        this.enemies = new Array(9);
+        this.hasBlockedThisTurn = false;
+        this.hasAttackedThisTurn = false;
 
         this.elements = [
-            new Element('⚙', '#fefefe', 'normal'),
-            new Element('🔥', '#ee4628', 'fire'),
-            new Element('💦', '#289fee', 'water'),
-            new Element('🌴', '#1bb607', 'grass')
+            new Element('⚙', '#fefefe', ElementType.NORMAL),
+            new Element('🔥', '#ee4628', ElementType.FIRE),
+            new Element('💦', '#289fee', ElementType.WATER),
+            new Element('🌴', '#1bb607', ElementType.GRASS)
+        ]
+
+        this.expProgress = [
+            0, 0 , 5, 15, 30, 50, 100, 200, 350, 600, 1000
         ]
 
         this.cardsList = this.generateCards(60);
@@ -36,7 +42,7 @@ class GameManager {
             rnd = this.randomFloored(9);
 
         const rndPoints = this.randomFloored(15) + 1;
-        const rndExp = Math.round(rndPoints * (Math.random() + 0.1).toFixed(1));
+        const rndExp = Math.round(rndPoints * (Math.random() + 1).toFixed(1));
 
         const enemy = new Enemy(rndPoints, rndExp, this.randomElement(true))
 
@@ -120,8 +126,12 @@ class GameManager {
         this.turn++;
         this.time = 60;
         this.isGameOver = false;
+        this.hasBlockedThisTurn = false;
+        this.hasAttackedThisTurn = false;
         this.inventory.elementsList = new Array(this.inventory.potionAmount);
         this.addEnemy()
+
+        this.player.regenerateHP()
 
         // const currentAmountOfCards = this.cards.filter(c => c != null).length;
         const newCards = this.dealCards(3);

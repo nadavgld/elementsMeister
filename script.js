@@ -48,28 +48,7 @@ for (var i = 0; i < UI_Potions_Holders.length; i++) {
 // Logic
 var GM = new GameManager();
 window.GM = GM;
-
-const Fire = GM.elements[0];
-const Water = GM.elements[1];
-const Grass = GM.elements[2];
-var player = GM.player;
-
 startGame()
-
-// var e1 = new Enemy(5, 10, Grass);
-// var e2 = new Enemy(5, 10, Water);
-// var w1 = new Weapon("mywep", 4, Fire, 1);
-// var s1 = new Shield("myShield",25, Fire);
-// player.wieldWeapon(w1);
-// // player.wieldShield(s1);
-
-// console.log(w1);
-// console.log(player);
-// console.log(e1);
-
-// player.attackEnemy(e1);
-// player.getHit(e2)
-// updateHP()
 
 function toggleInvetory() {
     GM.toggleInventory();
@@ -140,7 +119,10 @@ function updateEnemies(enemies) {
         var UI_enemy = document.getElementById('ec' + i)
         UI_enemy.innerHTML = '';
 
-        if (enemies[i] == undefined) continue;
+        if (enemies[i] == undefined) {
+            UI_enemy.style.opacity = .3;
+            continue;
+        }
 
         var _newDiv = document.createElement("div");
 
@@ -172,7 +154,9 @@ function onDragCardEnd(e) {
     draggedCard = null;
 
     setTimeout(() => {
-        e.target.style.opacity = 1;
+        try {
+            e.target.style.opacity = 1;
+        } catch (e) { }
     }, 1);
 }
 
@@ -247,8 +231,9 @@ function createUIEquipmentCard(type, card) {
     //${firstLetterUpper(card.name)}
 
     const item = type === 'WeaponCard' ? card.weapon : card.shield;
+    const weaponTurns = type === 'WeaponCard' ? `<br>${item.turns} Turns` : '';
     return `
-        <div class="inner-card-header"> [${type.substring(0, 6)}] </div>
+        <div class="inner-card-header"> [ ${type.substring(0, 6)} ] ${weaponTurns} </div>
         <div class="inner-card-symbol"> ${item.points} </div>        
     `;
 }
@@ -306,30 +291,41 @@ timeInterval = setInterval(() => {
 document.addEventListener("drop", function (event) {
     event.preventDefault();
 
-    if (draggedCard.id == 'shield' || draggedCard.id == 'weapon') return;
-
+    // Wield Shield
     if (event.target.id.indexOf('ishield') >= 0 || isAShieldHolder(event)) {
         handleWieldShield(event);
-    }
-
-    if (event.target.id.indexOf('iattack') >= 0 || isAWeaponHolder(event)) {
-        handleWieldWeapon(event);
-    }
-
-    if (draggedCard.id.indexOf('ae') >= 0) {
-        handleEnemyDrag(event);
 
         return;
     }
 
+    // Wield Weapon
+    if (event.target.id.indexOf('iattack') >= 0 || isAWeaponHolder(event)) {
+        handleWieldWeapon(event);
+
+        return;
+    }
+
+    // Attack
+    if (draggedCard.id.indexOf('ae') >= 0) {
+        handleEnemyDrag(event);
+
+        updateEnemies(GM.enemies)
+        updateUI()
+        return;
+    }
+
+    // Potions Effects
     if (event.target.id == 'brewed-potion') {
         draggedCard = null;
         return;
     }
 
+    // Insert To Inventory
     if (event.target.className.indexOf("inventory-slot") >= 0 && draggedCard !== null) {
         moveCardLocation(event);
-    } else if (event.target.className.indexOf('potion-holder') >= 0 && draggedCard !== null) {
+    }
+    // Insert To Brew Section
+    else if (event.target.className.indexOf('potion-holder') >= 0 && draggedCard !== null) {
         moveCardToPotionDeck(event);
     }
 
@@ -337,14 +333,22 @@ document.addEventListener("drop", function (event) {
     return;
 });
 
-function isAWeaponHolder(event) {
+function hasAWeapon(event) {
     return (event.target.className.indexOf('weapon-card') >= 0 ||
-        event.target.parentElement.className.indexOf('weapon-card') >= 0) && draggedCard.parentElement.className.indexOf('card-container') < 0
+        event.target.parentElement.className.indexOf('weapon-card') >= 0);
+}
+
+function isAWeaponHolder(event) {
+    return hasAWeapon(event) && draggedCard.parentElement.className.indexOf('inventory-slot') >= 0
+}
+
+function hasAShield(event) {
+    return (event.target.className.indexOf('shield-card') >= 0 ||
+        event.target.parentElement.className.indexOf('shield-card') >= 0);
 }
 
 function isAShieldHolder(event) {
-    return (event.target.className.indexOf('shield-card') >= 0 ||
-        event.target.parentElement.className.indexOf('shield-card') >= 0) && draggedCard.parentElement.className.indexOf('card-container') < 0
+    return hasAShield(event) && draggedCard.parentElement.className.indexOf('inventory-slot') >= 0
 }
 
 function handleWieldWeapon(event) {
@@ -369,6 +373,7 @@ function handleWieldWeapon(event) {
     while (_t.id != 'iattack')
         _t = _t.parentElement
 
+    draggedCard.setAttribute('draggable', false)
     _t.innerHTML = '';
     _t.appendChild(draggedCard)
     draggedCard.id = 'weapon';
@@ -398,6 +403,7 @@ function handleWieldShield(event) {
     while (_t.id != 'ishield')
         _t = _t.parentElement
 
+    draggedCard.setAttribute('draggable', false)
     _t.innerHTML = '';
     _t.appendChild(draggedCard)
     draggedCard.id = 'shield';
@@ -408,6 +414,92 @@ function handleWieldShield(event) {
 
 function handleEnemyDrag(event) {
     //Attack player/shield
+    const cardIndex = parseInt(draggedCard.id.substr(2))
+    var enemy;
+
+    try {
+        enemy = (GM.enemies[cardIndex]);
+    } catch (e) { return; }
+
+    if (hasAWeapon(event) && !GM.hasAttackedThisTurn) {
+        attack(enemy)
+        GM.hasAttackedThisTurn = true;
+    } else if (hasAShield(event) && !GM.hasBlockedThisTurn) {
+        defend(enemy)
+        GM.hasBlockedThisTurn = true;
+    }
+
+    if (enemy.enemy.points <= 0) {
+        GM.enemies[cardIndex] = undefined;
+        checkIfLvlUP()
+    }
+}
+
+function checkIfLvlUP() {
+    var lvl = GM.player.lvl;
+    const currentEXP = GM.player.exp;
+
+    while (GM.expProgress[lvl] <= currentEXP) {
+        GM.player.levelUp();
+
+        lvl = GM.player.lvl;
+    }
+}
+
+function attack(enemy) {
+    GM.player.attackEnemy(enemy.enemy);
+
+    if (GM.player.weapon == null) {
+        document.getElementById('weapon').parentNode.innerHTML = ''
+    } else {
+        updateWeaponCard()
+    }
+}
+
+function updateWeaponCard() {
+    var weaponParent = document.getElementById('weapon').parentNode;
+    const playerWeapon = GM.player.weapon;
+    const weaponCard = new WeaponCard(GM.randomName(), 'aaa', playerWeapon, ItemType.EQUIPMENT)
+
+    var _newDiv = document.createElement("div");
+
+    _newDiv.className = 'action-card';
+    _newDiv.id = 'weapon';
+    _newDiv.appendChild(createActionCardByType(weaponCard));
+
+    _newDiv.ondragstart = onDragCardStart;
+    _newDiv.ondragend = onDragCardEnd;
+
+    weaponParent.innerHTML = '';
+    weaponParent.appendChild(_newDiv)
+}
+
+function defend(enemy) {
+    GM.player.getHit(enemy.enemy)
+
+    if (GM.player.shield == null) {
+        document.getElementById('shield').parentNode.innerHTML = ''
+    } else {
+        updateShieldCard()
+    }
+}
+
+function updateShieldCard() {
+    var shieldParent = document.getElementById('shield').parentNode;
+    const playerShield = GM.player.shield;
+    const shieldCard = new ShieldCard(GM.randomName(), 'aaa', playerShield, ItemType.EQUIPMENT)
+
+    var _newDiv = document.createElement("div");
+
+    _newDiv.className = 'action-card';
+    _newDiv.id = 'shield';
+    _newDiv.appendChild(createActionCardByType(shieldCard));
+
+    _newDiv.ondragstart = onDragCardStart;
+    _newDiv.ondragend = onDragCardEnd;
+
+    shieldParent.innerHTML = '';
+    shieldParent.appendChild(_newDiv)
 }
 
 function moveCardToPotionDeck(event) {

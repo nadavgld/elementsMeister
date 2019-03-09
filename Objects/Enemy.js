@@ -9,6 +9,10 @@ class Enemy{
         this.points = 0;
         console.log('enemy died');
     }
+
+    isDead(){
+        return this.points <= 0;
+    }
 }
 
 export default Enemy;
