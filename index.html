@@ -11,18 +11,26 @@
 
 <body>
     <h1 id='title'>Elements Meister</h1>
-    <div id="details">
-        Level <span id="level">0</span>
-        Time <span id="time">60</span>
-        Turn <span id="turn">0</span>
-    </div>
     <div id="board">
+        <div id="details">
+            Level <span id="level">0</span>
+            Time <span id="time">60</span>
+            Turn <span id="turn">0</span>
+        </div>
         <div id="game-stats">
             Name: <span id="name"></span>
             Exp: <span id="exp"></span>
             <div id="hp-bar">
                 <div id="hp"></div>
                 <div id="hp-inner-bar"></div>
+            </div>
+            <div class="stats">
+                <span>Elemental Stats:</span>
+                <div class="element-stats">
+                    <div class="element-stat">🔥<span id="fire"></span></div>
+                    <div class="element-stat">💦<span id="water"></span></div>
+                    <div class="element-stat">🌴<span id="grass"></span></div>
+                </div>
             </div>
         </div>
         <div id="enemies">
@@ -49,14 +57,6 @@
             <div class="inventory-slot" id="is9"></div>
             <div class="inventory-slot" id="is10"></div>
             <div class="inventory-slot" id="is11"></div>
-            <!-- <div class="inventory-slot" id="is12"></div>
-            <div class="inventory-slot" id="is13"></div>
-            <div class="inventory-slot" id="is14"></div>
-            <div class="inventory-slot" id="is15"></div>
-            <div class="inventory-slot" id="is16"></div>
-            <div class="inventory-slot" id="is17"></div>
-            <div class="inventory-slot" id="is18"></div>
-            <div class="inventory-slot" id="is19"></div> -->
         </div>
         <div id="cards">
             <div class="deck-txt">
@@ -66,6 +66,11 @@
             <div class="card card-container"></div>
             <div class="card card-container"></div>
             <div class="card card-container"></div>
+        </div>
+        <div id="log">
+            <div class="deck-txt" id="log-txt">Game log</div>
+            <div id="log-msgs">
+            </div>
         </div>
 
         <div id="dock">
@@ -99,7 +104,9 @@
         </div>
     </div>
 
+    <script type="" src="libs/emitter.js"></script>
     <script type="module" src="Objects/Card.js"></script>
+    <script type="module" src="Objects/Logger.js"></script>
     <script type="module" src="Objects/Element.js"></script>
     <script type="module" src="Objects/Enemy.js"></script>
     <script type="module" src="Objects/Enum.js"></script>

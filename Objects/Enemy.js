@@ -1,3 +1,4 @@
+import logger from "./Logger.js";
 class Enemy{
     constructor(points, exp, element){
         this.points = points;
@@ -8,6 +9,8 @@ class Enemy{
     dead(){
         this.points = 0;
         console.log('enemy died');
+
+        logger.log('enemy died')
     }
 
     isDead(){

@@ -1,4 +1,5 @@
 import GameManager from './Objects/GameManager.js';
+import logger from './Objects/Logger.js';
 import { ItemType, PotionType } from './Objects/Enum.js';
 
 import Enemy from './Objects/Enemy.js';
@@ -27,6 +28,11 @@ const UI_Potions_Holders = document.getElementsByClassName('potion-holder');
 const UI_Brewed_Potion = document.getElementById('brewed-potion');
 const UI_Shield = document.getElementById('ishield')
 const UI_Weapon = document.getElementById('iattack')
+const UI_log_msgs = document.getElementById('log-msgs');
+
+const UI_FIRE_Span = document.getElementById('fire');
+const UI_WATER_Span = document.getElementById('water');
+const UI_GRASS_Span = document.getElementById('grass');
 
 var timeInterval;
 
@@ -46,6 +52,9 @@ for (var i = 0; i < UI_Potions_Holders.length; i++) {
 }
 
 // Logic
+logger.setDocument(document);
+logger.setUI(UI_log_msgs);
+
 var GM = new GameManager();
 window.GM = GM;
 startGame()
@@ -68,6 +77,11 @@ function updateUI() {
     UI_Name_Span.innerHTML = GM.player.name;
     UI_Exp_Span.innerHTML = GM.player.exp;
     UI_Level_Span.innerHTML = GM.player.lvl;
+
+    UI_FIRE_Span.innerHTML = " +" + GM.player.elementDmg.fire + " ";
+    UI_WATER_Span.innerHTML = " +" + GM.player.elementDmg.water + " ";
+    UI_GRASS_Span.innerHTML = " +" + GM.player.elementDmg.grass + " ";
+
     UI_Turn_Span.innerHTML = GM.turn;
     updateHP();
 }
@@ -243,7 +257,9 @@ function calculateHP(player) {
 }
 
 function startGame() {
-    GM.startGame()
+    UI_log_msgs.innerHTML = '';
+
+    GM.startGame();
 
     updateCards(GM.cards)
     updateEnemies(GM.enemies)
@@ -251,14 +267,24 @@ function startGame() {
     updateUI()
 }
 
-function nextTurn() {
-    if (GM.enemies.filter(e => e != undefined).length == 9) {
+function gameOver() {
+    updateUI()
+
+    setTimeout(() => {
         alert('You LOST!');
 
         setTimeout(() => {
             startGame();
         }, 1000);
 
+    }, 0);
+
+    return;
+}
+
+function nextTurn() {
+    if (GM.enemies.filter(e => e != undefined).length == 9) {
+        gameOver()
         return;
     }
     GM.nextTurn()
@@ -293,9 +319,9 @@ document.addEventListener("drop", function (event) {
 
     // Wield Shield
     if (event.target.id.indexOf('ishield') >= 0 || isAShieldHolder(event)) {
-        handleWieldShield(event);
+        var hasWield = handleWieldShield(event);
 
-        return;
+        if (hasWield) return;
     }
 
     // Wield Weapon
@@ -387,14 +413,14 @@ function handleWieldShield(event) {
     var card;
     try {
         card = (GM.inventory.itemList[cardIndex]);
-    } catch (e) { return; }
+    } catch (e) { return false; }
 
     var type;
     try {
         type = typeOfObject(card);
     } catch (e) { return; }
 
-    if (type != "ShieldCard") return;
+    if (type != "ShieldCard") return false;
 
     GM.player.wieldShield(card.shield);
     parent.removeChild(draggedCard)
@@ -410,6 +436,8 @@ function handleWieldShield(event) {
     draggedCard.setAttribute('draggable', false)
 
     GM.inventory.removeItem(card);
+
+    return true;
 }
 
 function handleEnemyDrag(event) {
@@ -424,7 +452,7 @@ function handleEnemyDrag(event) {
     if (hasAWeapon(event) && !GM.hasAttackedThisTurn) {
         attack(enemy)
         GM.hasAttackedThisTurn = true;
-    } else if (hasAShield(event) && !GM.hasBlockedThisTurn) {
+    } else if ((hasAShield(event) || event.target.id.indexOf('ishield') >= 0) && !GM.hasBlockedThisTurn) {
         defend(enemy)
         GM.hasBlockedThisTurn = true;
     }
@@ -475,11 +503,19 @@ function updateWeaponCard() {
 }
 
 function defend(enemy) {
-    GM.player.getHit(enemy.enemy)
+    GM.player.getHit(enemy.enemy);
 
-    if (GM.player.shield == null) {
+    if (GM.player.hp <= 0) {
+        GM.player.hp = 0;
+        gameOver()
+
+        return;
+    }
+
+    const UIshield = document.getElementById('shield');
+    if (GM.player.shield == null && UIshield) {
         document.getElementById('shield').parentNode.innerHTML = ''
-    } else {
+    } else if (UIshield && GM.player.shield) {
         updateShieldCard()
     }
 }

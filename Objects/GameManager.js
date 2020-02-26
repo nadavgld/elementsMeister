@@ -6,6 +6,7 @@ import { ElementCard, ShieldCard, WeaponCard, EnemyCard } from './Card.js';
 import Weapon from './Weapon.js';
 import Shield from './Shield.js';
 import Inventory from './Inventory.js';
+import logger from './Logger.js'
 
 class GameManager {
     constructor() {
@@ -26,7 +27,7 @@ class GameManager {
         ]
 
         this.expProgress = [
-            0, 0 , 5, 15, 30, 50, 100, 200, 350, 600, 1000
+            0, 0, 5, 15, 30, 50, 100, 200, 350, 600, 1000, 1500, 2200, 3000, 4000, 6500, 10000
         ]
 
         this.cardsList = this.generateCards(60);
@@ -120,6 +121,11 @@ class GameManager {
         this.turn = 0;
 
         this.nextTurn();
+
+        console.log('Initiated ' + name + ', lvl ' + this.player.lvl + ' with ' + this.player.exp + ' exp');
+
+
+        logger.log('Initiated ' + name + ', lvl ' + this.player.lvl + ' with ' + this.player.exp + ' exp')
     }
 
     nextTurn() {

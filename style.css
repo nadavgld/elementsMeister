@@ -14,7 +14,8 @@
 
 body {
     background: #a7a7a7;
-    height: 100%;
+    height: 100vh;
+    overflow-y: hidden;
 }
 
 #title {
@@ -34,10 +35,9 @@ body {
     border-top-right-radius: 8px;
     border-bottom: 0;
     margin-top: 12px;
-    margin-bottom: -8px;
     box-shadow: 0px 0px 5px 2px #00000030;
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     left: 0;
     right: 0;
 }
@@ -194,12 +194,20 @@ body {
 }
 
 #details {
-    display: flex;
+    /* display: flex;
     margin: auto;
     width: 80%;
     height: 40px;
     align-items: center;
     justify-content: left;
+    margin-top: 50px; */
+    display: flex;
+    margin: auto;
+    align-items: center;
+    justify-content: left;
+    position: absolute;
+    top: -20px;
+    left: 10px;
 }
 
 #details>span {
@@ -208,7 +216,7 @@ body {
 }
 
 #game-stats {
-    position: absolute;
+    /* position: absolute;
     width: 150px;
     height: 100px;
     background: #fde8b930;
@@ -216,6 +224,16 @@ body {
     padding: 15px;
     border-top-left-radius: 8px;
     grid-template-columns: auto auto;
+    row-gap: 2px; */
+    position: absolute;
+    width: 10vw;
+    height: 14vh;
+    background: #fde8b930;
+    display: grid;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    grid-template-columns: auto auto;
+    row-gap: 2px;
 }
 
 #hp-bar {
@@ -229,7 +247,8 @@ body {
 #hp-inner-bar {
     height: 100%;
     background: var(--grass);
-    margin-top: -19px;
+    margin-top: -20px;
+    padding-bottom: 1px;
 }
 
 #cards {
@@ -243,15 +262,48 @@ body {
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 35%;
+    top: 24%;
     left: 1%;
 }
 
-.deck-txt{
+#log {
+    height: 120px;
+    border: 1px dashed #fefefe;
+    width: 29.3vw;
+    display: block;
+    padding: 5px;
+    background: #00000020;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 48%;
+    left: 01%;
+}
+
+#log-txt {
+    text-align: left !important;
+    font-weight: 600;
+}
+
+#log-msgs {
+    max-height: 100px;
+    scroll-behavior: smooth;
+    overflow-y: auto;
+}
+
+.log-msg {
+    padding: 2px;
+}
+
+.log-msg:nth-child(even) {
+    background: #00000020;
+}
+
+.deck-txt {
     text-align: center
 }
 
-.deck-txt > div:nth-child(1){
+.deck-txt>div:nth-child(1) {
     font-size: 30px;
     font-weight: bold;
     text-align: center;
@@ -403,8 +455,34 @@ body {
     font-size: 16px !important;
 }
 
-#cycle{
+#cycle {
     font-size: 12px;
     letter-spacing: initial;
     opacity: 1;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    border-radius: 3px;
+    padding: 2px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ffffff60;
+}
+
+.stats {
+    grid-column: 1/-1;
+    margin-top: 3px;
+}
+
+.element-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
 }

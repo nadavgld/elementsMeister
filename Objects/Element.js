@@ -33,7 +33,11 @@ class Element {
         var playerIndex = ElementCycle.indexOf(this.type);
         var enemyIndex = ElementCycle.indexOf(element.type);
 
-        if (playerIndex > enemyIndex)
+        if(playerIndex == -1 && enemyIndex == -1) return false;
+        if(playerIndex == -1) return false;
+        if(enemyIndex == -1) return true; 
+
+        if (playerIndex === enemyIndex + 1)
             return true;
 
         if (playerIndex === 0 && enemyIndex === ElementCycle.length - 1)
